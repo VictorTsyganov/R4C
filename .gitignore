@@ -64,8 +64,12 @@ db.sqlite3
 !*/migrations/__init__.py
 R4C/customers/migrations/*
 !R4C/customers/migrations/__init__.py
+*/migrations/*
+!*/migrations/__init__.py
 R4C/orders/migrations/*
 !R4C/orders/migrations/__init__.py
+*/migrations/*
+!*/migrations/__init__.py
 R4C/robots/migrations/*
 !R4C/robots/migrations/__init__.py
 
