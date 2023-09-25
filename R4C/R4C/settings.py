@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,12 +22,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'mztx@x_-=gfhc9xs@bm58m&@3pc7##opo14zob!(l2tus05+jo'
+load_dotenv(os.path.join(BASE_DIR, '.env'), verbose=True)
+
+# TODO: Удалить секретный ключ после переноса в .env файл.
+SECRET_KEY = os.getenv('SECRET_KEY', 'mztx@x_-=gfhc9xs@bm58m&@3pc7##opo14zob!(l2tus05+jo')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
