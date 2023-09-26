@@ -1,7 +1,5 @@
 import re
-
 from datetime import datetime
-
 
 MODEL_VERSION: str = r'^[0-9A-Za-zА-ЯЁа-яё]{1,2}$'
 CREATED: str = (

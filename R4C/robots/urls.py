@@ -6,4 +6,5 @@ app_name = 'robots'
 
 urlpatterns = [
     path('create_robot', views.create_robot),
+    path('download_report', views.download_report),
 ]
