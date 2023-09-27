@@ -109,7 +109,7 @@ def download_report(request):
                 for i in range(3):
                     row.write(i, item[i])
                 row_num += 1
-            filename = f'robots/reports/{report_name}.xls'
+            filename = f'reports/{report_name}.xls'
             book.save(filename)
             return FileResponse(open(filename, 'rb'))
         except IndexError:

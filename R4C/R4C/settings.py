@@ -129,7 +129,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = BASE_DIR / 'orders/sent_emails'
+EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
 DEFAULT_FROM_EMAIL = 'orders@robots.com'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
