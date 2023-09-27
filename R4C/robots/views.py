@@ -1,11 +1,15 @@
 import sqlite3
 from datetime import datetime, timedelta
-from json import loads
+from json import JSONDecodeError, loads
 
 import pandas as pd
 import xlwt
+from django.core.mail import send_mail
 from django.http import FileResponse, HttpResponseBadRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+
+from orders.models import Order
+from R4C import settings
 
 from .models import Robot
 from .validators import validate_robot
@@ -13,9 +17,16 @@ from .validators import validate_robot
 
 @csrf_exempt
 def create_robot(request):
-    'функция создания данных для робота.'
+    """Функция создания данных для робота."""
     if request.method == 'POST':
-        data = validate_robot(loads(request.body))
+        try:
+            data = validate_robot(loads(request.body))
+        except JSONDecodeError:
+            return HttpResponseBadRequest(
+                'Запрос отправлен без необходимых данных.\n'
+                'Нужны данные в формате JSON, например, \n'
+                '{"model":"R2","version":"D2","created":"2022-12-31 23:59:59"}'
+            )
         try:
             model = data.get('model')
             version = data.get('version')
@@ -30,6 +41,21 @@ def create_robot(request):
         except AttributeError:
             return HttpResponseBadRequest(data)
         if create:
+            orders = Order.objects.filter(robot_serial=serial)
+            if orders:
+                send_mail(
+                    subject=f'Robot serial number {serial}.',
+                    message=(
+                        'Добрый день!\n'
+                        'Недавно вы интересовались нашим роботом модели '
+                        f'{model}, версии {version}.\n'
+                        'Этот робот теперь в наличии. Если вам подходит '
+                        'этот вариант - пожалуйста, свяжитесь с нами.'
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[orders[0].customer.email]
+                )
+                orders[0].customer.delete()
             robot_json = robot.__dict__
             robot_json.pop('_state')
             return JsonResponse(robot_json)
@@ -41,8 +67,16 @@ def create_robot(request):
     )
 
 
+def create_header_start_row(sheet, df):
+    """Функция создания заголовка и перехода на новую строчку."""
+    for i in range(3):
+        sheet.write(0, i, df.columns.values[i])
+    return 1
+
+
 @csrf_exempt
 def download_report(request):
+    """Функция выгрузки отчета о создании роботов за неделю."""
     if request.method == 'GET':
         today = datetime.today()
         week = timedelta(weeks=1)
@@ -65,20 +99,16 @@ def download_report(request):
             book = xlwt.Workbook(encoding="utf-8")
             sheet_name = df.values[0][0]
             sheet = book.add_sheet(sheet_name)
-            for i in range(3):
-                sheet.write(0, i, df.columns.values[i])
-            num = 1
+            row_num = create_header_start_row(sheet, df)
             for item in df.values:
                 if not item[0] == sheet_name:
                     sheet_name = item[0]
                     sheet = book.add_sheet(sheet_name)
-                    for i in range(3):
-                        sheet.write(0, i, df.columns.values[i])
-                    num = 1
-                row = sheet.row(num)
+                    row_num = create_header_start_row(sheet, df)
+                row = sheet.row(row_num)
                 for i in range(3):
                     row.write(i, item[i])
-                num += 1
+                row_num += 1
             filename = f'robots/reports/{report_name}.xls'
             book.save(filename)
             return FileResponse(open(filename, "rb"))

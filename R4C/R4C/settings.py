@@ -11,18 +11,19 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-load_dotenv(os.path.join(BASE_DIR, '.env'), verbose=True)
+load_dotenv(BASE_DIR / '.env', verbose=True)
 
 # TODO: Удалить секретный ключ после переноса в .env файл.
 SECRET_KEY = os.getenv('SECRET_KEY', 'mztx@x_-=gfhc9xs@bm58m&@3pc7##opo14zob!(l2tus05+jo')
@@ -84,7 +85,7 @@ WSGI_APPLICATION = 'R4C.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -126,5 +127,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = BASE_DIR / 'orders/sent_emails'
+DEFAULT_FROM_EMAIL = 'orders@robots.com'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
