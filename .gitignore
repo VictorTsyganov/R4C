@@ -12,8 +12,6 @@ build/
 develop-eggs/
 dist/
 downloads/
-reports/
-sent_emails/
 media/
 eggs/
 .eggs/
@@ -60,6 +58,7 @@ cover/
 
 # Django stuff:
 *.log
+*.xls
 local_settings.py
 db.sqlite3
 */migrations/*
