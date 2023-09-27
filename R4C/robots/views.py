@@ -96,7 +96,7 @@ def download_report(request):
         )
         df.columns = ['Модель', 'Версия', 'Количество за неделю']
         try:
-            book = xlwt.Workbook(encoding="utf-8")
+            book = xlwt.Workbook(encoding='utf-8')
             sheet_name = df.values[0][0]
             sheet = book.add_sheet(sheet_name)
             row_num = create_header_start_row(sheet, df)
@@ -111,7 +111,7 @@ def download_report(request):
                 row_num += 1
             filename = f'robots/reports/{report_name}.xls'
             book.save(filename)
-            return FileResponse(open(filename, "rb"))
+            return FileResponse(open(filename, 'rb'))
         except IndexError:
             return HttpResponseBadRequest(
                 'За последнюю неделю не было произведено ни одного робота.'
